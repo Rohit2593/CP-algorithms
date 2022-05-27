@@ -11,7 +11,7 @@ ll find_set(ll a, vl &parent)
 {
     if(a == parent[a])
         return a;
-    return parent[a] = find_set(parent[a]);
+    return parent[a] = find_set(parent[a], parent);
 }
 
 void union_set(ll a, ll b, vl &parent, vl &size)
