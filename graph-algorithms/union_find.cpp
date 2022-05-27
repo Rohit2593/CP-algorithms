@@ -2,6 +2,10 @@
 // initially :
 //      the size of every index will be 1
 //      parent[i] = i for every i
+ 
+// applications : 
+// detecting cycle in a graph ( in the union function if a!=b, cycle is not present for edge (a, b), but if a == b then there is a cycle )
+// finding the number of connected components in the graph : initialize ans to n (number of nodes) and decrement the ans if union operation is performed on two sets
 
 ll find_set(ll a, vl &parent)
 {
