@@ -1,0 +1,4 @@
+in case of manhattan distances its better to rotate the axes by 45 degrees as after rotating the axes, the distance between any two points becomes :
+max ( |y1' - y2' | , |x1' - x2'|) where these are the new coordinates 
+x' =  (x + y)
+y' =  (y - x)
