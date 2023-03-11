@@ -2,9 +2,11 @@ struct Query {
     int l, r, idx ;
 } ;
 
+int block_size ; // sqrt(n)
+
 bool comp(Query &q1, Query &q2) {
-    if(q1.l != q2.l)
-        return q1.l < q2.l ;
+    if(q1.l / block_size != q2.l / block_size)
+        return q1.l / block_size < q2.l / block_size ;
     return q1.r < q2.r ;
 }
 
