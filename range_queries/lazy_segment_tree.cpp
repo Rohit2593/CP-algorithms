@@ -1,54 +1,99 @@
-// useful when update operation is to be performed on ranges;
+struct node{
+    ll val = 0;
+    ll lazy = 0;
 
-// in solve function : 
-//    tree.clear() ; 
-//    tree.resize(4*n + 1 , 0) ;
-vl tree; 
-
-void build(vl &arr, ll curr, ll l, ll r)
-{
-    if(l == r)
-    {
-        tree[curr] = arr[l];
-        return ;
+    node(){
+        val = 0;
+        lazy = 0;
     }
 
-    ll m = (l + r) / 2;
-
-    build(arr, curr*2+1, l, m);
-    build(arr, curr*2 + 2 , m+1, r);
-}
-
-ll query(ll curr, ll tl, ll tr, ll pos)
-{
-    if(tl == tr)
-        return tree[curr];
-    ll tm = (tl + tr) / 2;
-    if(pos <= tm)
-        return tree[curr] + query(curr*2 + 1, tl, tm, pos);
-    else 
-        return tree[curr] + query(curr*2 + 2, tm+1, tr, pos);
-}
-
-void update(ll curr, ll tl, ll tr, ll l , ll r, ll add)
-{
-    if(tl == l && tr == r){
-        tree[curr] += add;
-        return ;
+    node(ll v){
+        val = v;
+        lazy = 0;
     }
 
-    ll tm = (tl + tr) / 2;
-
-    if(r <= tm) {
-        update(curr *2 + 1, tl, tm , l , r , add);
-        return ;
+    void merge(node &n1, node &n2){
+        val = n1.val + n2.val;
     }
-    if(l > tm) {
-        update(curr * 2 + 2, tm+1, tr, l , r , add);
-        return ;
+};
+
+class LazySegTree{
+public:
+    ll n;
+    vector<node> tree;
+    vector<ll> arr;
+
+    LazySegTree(ll n, vector<ll> arr){
+        this->n = n;
+        this->arr = arr;
+        tree.resize(4*n + 10);
+
+        fill(tree.begin(), tree.end(), node());
     }
 
-    update(curr * 2 + 1, tl, tm , l , tm, add);
-    update(curr * 2 + 2, tm+1, tr, tm+1, r, add);
+    void build(ll ind, ll tl, ll tr){
+        if(tl == tr){
+            tree[ind].val = arr[tl];
+            return;
+        }
 
-}
+        ll tm = (tl + tr) / 2;
+
+        build(2*ind + 1, tl, tm);
+        build(2*ind + 2, tm+1, tr);
+
+        tree[ind].merge(tree[2*ind + 1], tree[2*ind + 2]);
+    }
+
+    void performUpdate(ll ind, ll tl, ll tr, ll upd){
+        tree[ind].val += (tr - tl + 1ll) * upd;
+
+        if(tr != tl){
+            tree[2*ind + 1].lazy += upd;
+            tree[2*ind + 2].lazy += upd;
+        }
+    }
+            
+    ll query(ll ind, ll tl, ll tr, ll l, ll r){
+        if(tl > tr || tl > r || tr < l)
+            return 0;
+
+        performUpdate(ind, tl, tr, tree[ind].lazy);
+        tree[ind].lazy = 0;
+
+        if(tl >= l && tr <= r)
+            return tree[ind].val;
+
+        ll tm = (tl + tr) / 2;
+
+        ll v1 = query(2*ind + 1, tl, tm, l, r);
+        ll v2 = query(2*ind + 2, tm + 1, tr, l, r);
+
+        node temp(0);
+        node left(v1);
+        node right(v2);
+
+        temp.merge(left, right);
+
+        return temp.val;
+    }
+
+    void update(ll ind, ll tl, ll tr, ll l, ll r, ll val){
+        performUpdate(ind, tl, tr, tree[ind].lazy);
+        tree[ind].lazy = 0;
+
+        if(tl > tr || tl > r || tr < l)
+            return; 
+
+        if(tl >= l && tr <= r){
+            performUpdate(ind, tl, tr, val);
+            return;
+        }
+
+        ll tm = (tl + tr) / 2;
+        update(2*ind + 1, tl, tm, l, r, val);
+        update(2*ind + 2, tm+1, tr, l, r, val);
+
+        tree[ind].merge(tree[2*ind + 1], tree[2*ind + 2]);
+    }
+};
