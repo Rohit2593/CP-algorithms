@@ -55,3 +55,5 @@ vector<ll> mo_s_algorithm(vector<Query> queries) { // time complexity : ((N + Q)
 
     return ans ;
 }
+
+// testing
